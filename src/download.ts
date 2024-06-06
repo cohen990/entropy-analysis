@@ -2,6 +2,7 @@ import { Octokit } from "@octokit/rest";
 import { Duplex } from "stream";
 import unzipper from "unzipper";
 import { parse } from "ts-command-line-args";
+import { renameSync, rmSync } from "fs"
 
 interface IArgs {
   owner: string;
@@ -31,13 +32,26 @@ export const args = parse<IArgs>({
 
   console.log(result);
 
-  const path = "./analysables";
-  const filename = `${path}/${repo}.zip`;
-  //   writeFile(filename, Buffer.from(result.data as ArrayBuffer));
+  const analysablesRoot = `${process.cwd()}/analysables`;
+  const targetDirectory = `${analysablesRoot}/${owner}-${repo}`
+  var done = false;
   let stream = new Duplex();
   stream.push(Buffer.from(result.data as ArrayBuffer));
   stream.push(null);
-  stream.pipe(unzipper.Extract({ path: `${path}` })).on("close", () => {
-    console.log("Files unzipped successfully");
-  });
+  let stream2 = new Duplex();
+  stream2.push(Buffer.from(result.data as ArrayBuffer));
+  stream2.push(null);
+  stream.pipe(unzipper.Extract({ path: analysablesRoot }))
+    .on("close", () => {
+      console.log("Files unzipped successfully");
+      stream2.pipe(unzipper.Parse({ path: analysablesRoot }))
+        .on("entry", (entry) => {
+          if (done) return;
+          const directoryName = entry.path.substring(0, entry.path.length)
+          const directory = `${analysablesRoot}/${directoryName}`;
+          rmSync(targetDirectory, { recursive: true, force: true })
+          renameSync(directory, targetDirectory)
+          done = true;
+        })
+    })
 })();
