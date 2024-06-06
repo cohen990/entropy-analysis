@@ -22,12 +22,12 @@ export function extract(file: string): number {
     for (var node of nodesToSearch) {
       log(`scanning a ${kindOf(node)} node`);
       nodeCount++;
-      ts.forEachChild(node, (child) => {
-        log(`scanning a ${kindOf(child)} under the ${kindOf(node)}`);
-        megalog(inspect(node, undefined, 2));
-        nodesToSearchBuffer.push(...child.getChildren(sourceFile));
-      });
-      // for(var child of node.statements)
+      // node.getChildren().forEach((child) => {
+      // ts.forEachChild(node, (child) => {
+      log(`scanning a ${kindOf(node)} under the ${kindOf(node)}`);
+      megalog(inspect(node, undefined, 2));
+      nodesToSearchBuffer.push(...node.getChildren(sourceFile));
+      // });
     }
     log(`found ${nodesToSearchBuffer.length} more nodes`);
     nodesToSearch = [...nodesToSearchBuffer];
@@ -38,6 +38,7 @@ export function extract(file: string): number {
 }
 
 const log = (message: string) => {
+  return;
   console.log(message);
 };
 
