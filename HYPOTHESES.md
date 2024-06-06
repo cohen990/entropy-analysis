@@ -1,4 +1,4 @@
-Hypothesis: Maintainability of a codebase can be correlated to an entropy value, that can be computed from the abstract syntax tree.
+Hypothesis: Maintainability of a codebase can be correlated to an entropy value, that can be computed from the abstract syntax tree. And maintainability to correlatable to the cost of implementation of new features.
 
 - Projects that have been abandoned due to tech debt (if I can find any) will have a very high entropy
 - Codebases should have their entropy decrease following (large?) refactors

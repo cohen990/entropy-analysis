@@ -18,9 +18,6 @@ export const args = parse<IArgs>({
 
 (async () => {
   const octokit = new Octokit();
-  //   const owner = "bendrucker";
-  //   const repo = "smallest";
-  //   const ref = "master";
   const owner = args.owner;
   const repo = args.repo;
   const ref = args.ref;

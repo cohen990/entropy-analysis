@@ -1,35 +1,49 @@
 import * as ts from "typescript";
 import { inspect } from "util";
+import { computeEntropy } from "./entropy";
+import { EntropyNode, EntropyTreeRoot } from "./entropyTree";
 
-/**
- * Prints out particular nodes from a source file
- *
- * @param file a path to a file
- * @param identifiers top level identifiers available
- */
 export function extract(file: string): number {
-  // Create a Program to represent the project, then pull out the
-  // source file to parse its AST.
-  let program = ts.createProgram([file], { allowJs: true });
+  const compilerOptions: ts.CompilerOptions = {
+    allowJs: true,
+    moduleResolution: ts.ModuleResolutionKind.NodeNext,
+    target: ts.ScriptTarget.ESNext,
+  }
+  let program = ts.createProgram([file], compilerOptions);
   const sourceFile = program.getSourceFile(file);
+  debug(`sourceFile: ${sourceFile}`)
 
   var nodeCount = 0;
-  var nodesToSearch: ts.Node[] = [sourceFile];
-  var nodesToSearchBuffer: ts.Node[] = [];
+
+  const entropyTreeRoot = EntropyTreeRoot(sourceFile)
+
+  var nodesToSearch: EntropyNode[] = [entropyTreeRoot];
+
+  var nodesToSearchBuffer: EntropyNode[] = [];
+
+  debug(`starting with ${inspect(nodesToSearch)}`)
+
 
   while (nodesToSearch.length > 0) {
-    log(`scanning ${nodesToSearch.length} nodes`);
+
+    debug(`scanning ${nodesToSearch.length} nodes`);
+
     for (var node of nodesToSearch) {
-      log(`scanning a ${kindOf(node)} node`);
+      if (!node) {
+        continue
+      }
+
+      debug(`scanning a ${node.syntaxKind()} node`);
+
       nodeCount++;
-      // node.getChildren().forEach((child) => {
-      // ts.forEachChild(node, (child) => {
-      log(`scanning a ${kindOf(node)} under the ${kindOf(node)}`);
-      megalog(inspect(node, undefined, 2));
-      nodesToSearchBuffer.push(...node.getChildren(sourceFile));
-      // });
+
+      trace(inspect(node, undefined, 2));
+
+      nodesToSearchBuffer.push(...node.getChildren());
     }
-    log(`found ${nodesToSearchBuffer.length} more nodes`);
+
+    debug(`found ${nodesToSearchBuffer.length} more nodes`);
+
     nodesToSearch = [...nodesToSearchBuffer];
     nodesToSearchBuffer = [];
   }
@@ -37,13 +51,12 @@ export function extract(file: string): number {
   return nodeCount;
 }
 
-const log = (message: string) => {
-  return;
+const info = (message: string) => {
   console.log(message);
 };
 
-const megalog = (message: string) => null; //log(message);
-
-const kindOf: (node: ts.Node) => string = (node: ts.Node) => {
-  return ts.SyntaxKind[node.kind];
+const debug = (message: string) => {
+  console.log(message);
 };
+
+const trace = (message: string) => null; //log(message);
