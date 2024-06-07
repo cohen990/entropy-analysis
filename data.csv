@@ -1,7 +1,7 @@
-owner           ,repo             ,entropy,size ,loc
-microsoft       ,TypeScript       ,2683139,523M ,419954
-BablyonJS       ,Babylon.js       ,2428641,661M ,439097
-ionic-team      ,ionic-framework  ,165176 ,117M , 35326
-FuelLabs        ,fuels.ts         , 184318,14M  , 33723
-react-hook-form ,react-hook-form  ,  98132,6M   , 15915
+owner           ,repo             ,entropy ,size ,loc
+microsoft       ,TypeScript       ,2683139 ,523M ,419954
+BablyonJS       ,Babylon.js       ,2428641 ,661M ,439097
+ionic-team      ,ionic-framework  , 165176 ,117M , 35326
+FuelLabs        ,fuels.ts         , 184318 ,14M  , 33723
+react-hook-form ,react-hook-form  ,  98132 ,6M   , 15915
 cohen990        ,mars-rover-again ,    212 ,252K ,    42
