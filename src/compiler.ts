@@ -1,9 +1,8 @@
 import * as ts from "typescript";
 import { inspect } from "util";
-import { computeEntropy } from "./entropy";
 import { EntropyNode, EntropyTreeRoot } from "./entropyTree";
 
-export function extract(file: string): number {
+export function extract(file: string): [number, EntropyNode] {
   const compilerOptions: ts.CompilerOptions = {
     allowJs: true,
     moduleResolution: ts.ModuleResolutionKind.NodeNext,
@@ -48,7 +47,7 @@ export function extract(file: string): number {
     nodesToSearchBuffer = [];
   }
 
-  return nodeCount;
+  return [nodeCount, entropyTreeRoot];
 }
 
 const info = (message: string) => {
@@ -56,7 +55,7 @@ const info = (message: string) => {
 };
 
 const debug = (message: string) => {
-  console.log(message);
+  // console.log(message);
 };
 
 const trace = (message: string) => null; //log(message);
