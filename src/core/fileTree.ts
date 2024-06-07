@@ -52,9 +52,8 @@ class FileNode {
     }
 
     print() {
-        if (this.isLeaf()) {
-            console.log(`${this.path + this.name} - entropy ${this.entropy}`);
-        }
+        console.log(`${this.path + this.name} - entropy ${this.entropy}`);
+
         Object.values(this.#children).forEach((x) => x.print());
     }
 
@@ -82,7 +81,6 @@ class FileNode {
     recomputeTreeEntropy(): number {
         const localEntropy = this.fileEntropy || 0;
         computeEntropy(Object.values(this.#children).length);
-        console.log(`${this.name} has local entropy: ${localEntropy}`);
 
         if (this.isLeaf()) {
             this.entropy = localEntropy;
