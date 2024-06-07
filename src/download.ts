@@ -1,55 +1,66 @@
 import { Octokit } from "@octokit/rest";
-import { Duplex } from "stream";
-import unzipper from "unzipper";
 import { parse } from "ts-command-line-args";
-import { renameSync, rmSync } from "fs"
 import { sanitiseFileName } from "./fileNames";
+import { writeFileSync, mkdirSync, createWriteStream, existsSync } from "fs";
+import { Entry, fromBuffer } from "yauzl";
 
 interface IArgs {
-  owner: string;
-  repo: string;
-  ref: string;
+    owner: string;
+    repo: string;
+    ref: string;
 }
 
 export const args = parse<IArgs>({
-  owner: { type: String, alias: "o", optional: true },
-  repo: { type: String, alias: "r", optional: true },
-  ref: { type: String, alias: "f", optional: true },
+    owner: { type: String, alias: "o", optional: true },
+    repo: { type: String, alias: "r", optional: true },
+    ref: { type: String, alias: "f", optional: true },
 });
 
 (async () => {
-  const octokit = new Octokit();
-  const owner = args.owner;
-  const repo = args.repo;
-  const ref = args.ref;
-  const result = await octokit.rest.repos.downloadZipballArchive({
-    owner,
-    repo,
-    ref,
-  });
+    const octokit = new Octokit();
+    const owner = args.owner;
+    const repo = args.repo;
+    const ref = args.ref;
+    const result = await octokit.rest.repos.downloadZipballArchive({
+        owner,
+        repo,
+        ref,
+    });
 
-  console.log(result);
+    console.log(result);
 
-  const analysablesRoot = `${process.cwd()}/analysables`;
-  const targetDirectory = sanitiseFileName(`${analysablesRoot}/${owner}-${repo}`)
-  var done = false;
-  let stream = new Duplex();
-  stream.push(Buffer.from(result.data as ArrayBuffer));
-  stream.push(null);
-  let stream2 = new Duplex();
-  stream2.push(Buffer.from(result.data as ArrayBuffer));
-  stream2.push(null);
-  stream.pipe(unzipper.Extract({ path: analysablesRoot }))
-    .on("close", () => {
-      console.log("Files unzipped successfully");
-      stream2.pipe(unzipper.Parse({ path: analysablesRoot }))
-        .on("entry", (entry) => {
-          if (done) return;
-          const directoryName = entry.path.substring(0, entry.path.length)
-          const directory = `${analysablesRoot}/${directoryName}`;
-          rmSync(targetDirectory, { recursive: true, force: true })
-          renameSync(directory, targetDirectory)
-          done = true;
-        })
-    })
+    const analysablesRoot = `${process.cwd()}/analysables`;
+    const targetDirectory =
+        analysablesRoot + "/" + sanitiseFileName(`${owner}-${repo}`);
+    if (!existsSync(targetDirectory)) {
+        mkdirSync(targetDirectory);
+    }
+
+    const buffer = Buffer.from(result.data as ArrayBuffer);
+
+    unzip(buffer, targetDirectory);
 })();
+
+const unzip = (buffer: Buffer, path: string) => {
+    fromBuffer(buffer, { lazyEntries: true }, function (err, zipfile) {
+        if (err) throw err;
+        zipfile.readEntry();
+        zipfile.on("entry", function (entry: Entry) {
+            if (/\/$/.test(entry.fileName)) {
+                if (!existsSync(path + "/" + entry.fileName)) {
+                    mkdirSync(path + "/" + entry.fileName);
+                }
+                zipfile.readEntry();
+            } else {
+                const write = createWriteStream(path + "/" + entry.fileName);
+                zipfile.openReadStream(entry, function (err, readStream) {
+                    if (err) throw err;
+                    readStream.on("end", function () {
+                        zipfile.readEntry();
+                    });
+                    readStream.pipe(write);
+                });
+            }
+        });
+    });
+};
