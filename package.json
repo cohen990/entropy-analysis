@@ -3,10 +3,11 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "analyse-file": "ts-node src/analyse.ts",
-        "analyse-project": "ts-node src/analyseProject.ts",
-        "count-loc": "ts-node src/countProjectLoc.ts",
-        "download": "ts-node src/download.ts",
+        "analyse-file": "ts-node src/cli/analyse.ts",
+        "analyse-project": "ts-node src/cli/analyseProject.ts",
+        "count-loc": "ts-node src/cli/countProjectLoc.ts",
+        "download": "ts-node src/cli/download.ts",
+        "download-and-analyse": "ts-node src/cli/downloadAndAnalyse.ts",
         "test": "jest"
     },
     "keywords": [],
