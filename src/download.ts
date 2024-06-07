@@ -3,6 +3,7 @@ import { Duplex } from "stream";
 import unzipper from "unzipper";
 import { parse } from "ts-command-line-args";
 import { renameSync, rmSync } from "fs"
+import { sanitiseFileName } from "./fileNames";
 
 interface IArgs {
   owner: string;
@@ -30,7 +31,7 @@ export const args = parse<IArgs>({
   console.log(result);
 
   const analysablesRoot = `${process.cwd()}/analysables`;
-  const targetDirectory = `${analysablesRoot}/${owner}-${repo}`
+  const targetDirectory = sanitiseFileName(`${analysablesRoot}/${owner}-${repo}`)
   var done = false;
   let stream = new Duplex();
   stream.push(Buffer.from(result.data as ArrayBuffer));
