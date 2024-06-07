@@ -28,9 +28,6 @@ export class EntropyNode {
                 .filter(x => x)
                 .map(child => new EntropyNode(child, this.#sourceFile))
             this.#entropy = computeEntropy(this.#children.length)
-            if (this.#entropy > 0) {
-                console.log(`Computed container entropy for ${this.syntaxKind()} to be ${this.#entropy}`)
-            }
         }
         return this.#children
     }

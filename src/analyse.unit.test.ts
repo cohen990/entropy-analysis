@@ -1,17 +1,19 @@
 import { extract } from "./compiler"
-import { computeEntropy } from "./entropy"
 
 it("should analyse", () => {
 
     const owner = "testing"
     const repo = "sample"
     const path = "src/bare-hello.ts"
-    const file = `${process.cwd()}/analysables/${owner}-${repo}/${path}`
-    const [elements, tree] = extract(file);
-    console.log(`found ${elements} elements in the ast`);
+    const secondPath = "src/multihello.ts"
 
-    const entropy = computeEntropy(elements)
-    console.log(`entropy = ${entropy}`);
+    const file = `${process.cwd()}/analysables/${owner}-${repo}/${path}`
+    const [_, tree] = extract(file);
+
+    const file2 = `${process.cwd()}/analysables/${owner}-${repo}/${secondPath}`
+    const [__, tree2] = extract(file2);
 
     const treeEntropy = tree.getEntropy()
+    const secondTreeEntropy = tree2.getEntropy()
+    expect(secondTreeEntropy).toBeGreaterThan(treeEntropy)
 })
