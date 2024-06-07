@@ -1,6 +1,7 @@
 import { parse } from "ts-command-line-args";
 import { extract } from "./compiler";
 import { computeEntropy } from "./entropy";
+import { sanitiseFileName } from "./fileNames";
 
 
 interface IArgs {
@@ -17,7 +18,8 @@ export const args = parse<IArgs>({
 
 (async () => {
   console.log("reading file");
-  const file = `${process.cwd()}/analysables/${args.owner}-${args.repo}/${args.path}`
+  const projectDirectory = sanitiseFileName(`${args.owner}-${args.repo}`)
+  const file = `${process.cwd()}/analysables/${projectDirectory}/${args.path}`
 
   console.log(`analysing ${file}`);
   const [elements, tree] = extract(file);

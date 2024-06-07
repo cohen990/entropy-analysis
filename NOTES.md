@@ -43,3 +43,11 @@ https://arpita95b.medium.com/stirlings-approximation-a-powerful-tool-to-approxim
 How does this relate to cyclomatic complexity?
 other reading:
 https://dependencies.app/entropy
+
+next step could be to construct a tree out of the directory structure so that the system can compute the tree entropy very similarly to how the files do
+
+how can we factor in the number of times a particular module is referenced?
+
+Can you construct a tree out of module references? probably more of a graph?
+
+Maybe I could take inspiration from the dependencies entropy pictured above

@@ -12,6 +12,8 @@ export function extract(file: string): [number, EntropyNode] {
   const sourceFile = program.getSourceFile(file);
   debug(`sourceFile: ${sourceFile}`)
 
+  info(`Processing ${sourceFile.text.split("\n").length} lines of code`)
+
   var nodeCount = 0;
 
   const entropyTreeRoot = EntropyTreeRoot(sourceFile)
@@ -47,11 +49,12 @@ export function extract(file: string): [number, EntropyNode] {
     nodesToSearchBuffer = [];
   }
 
+  info(`Discovered a total of ${nodeCount} nodes`)
   return [nodeCount, entropyTreeRoot];
 }
 
 const info = (message: string) => {
-  console.log(message);
+  // console.log(message);
 };
 
 const debug = (message: string) => {
