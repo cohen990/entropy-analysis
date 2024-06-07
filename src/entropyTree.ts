@@ -1,7 +1,8 @@
-import { Node, SyntaxKind } from "typescript";
+import { Node, SyntaxKind, SourceFile } from "typescript";
+import { computeEntropy } from "./entropy";
 
-export const EntropyTreeRoot: (node: Node) => EntropyNode = (node: Node) => {
-    return new EntropyNode(node)
+export const EntropyTreeRoot: (sourceFile: SourceFile) => EntropyNode = (sourceFile) => {
+    return new EntropyNode(sourceFile, sourceFile)
 }
 
 export class EntropyNode {
@@ -9,9 +10,11 @@ export class EntropyNode {
     #node: Node
     #entropy: number
     #children: EntropyNode[]
+    #sourceFile: SourceFile
 
-    constructor(node: Node) {
+    constructor(node: Node, sourceFile: SourceFile) {
         this.#node = node
+        this.#sourceFile = sourceFile
     }
 
 
@@ -21,12 +24,20 @@ export class EntropyNode {
 
     getChildren(): EntropyNode[] {
         if (this.#children === undefined) {
-            this.#children = this.#node.getChildren()
+            this.#children = this.#node.getChildren(this.#sourceFile)
                 .filter(x => x)
-                .map(child => new EntropyNode(child))
-            this.#entropy = this.#children.length
-            console.log(`Computed entropy for ${this.syntaxKind()} to be ${this.#entropy}`)
+                .map(child => new EntropyNode(child, this.#sourceFile))
+            this.#entropy = computeEntropy(this.#children.length)
+            if (this.#entropy > 0) {
+                console.log(`Computed container entropy for ${this.syntaxKind()} to be ${this.#entropy}`)
+            }
         }
         return this.#children
+    }
+
+    getEntropy(): number {
+        const entropy = this.#entropy;
+        return entropy +
+            this.#children.map(child => child.getEntropy()).reduce((previousValue, nextValue) => previousValue + nextValue, 0)
     }
 }
