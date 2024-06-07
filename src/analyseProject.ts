@@ -3,7 +3,7 @@ import { extract } from "./compiler";
 import { computeEntropy } from "./entropy";
 import { discoverFiles } from "./discoverFiles";
 import { sanitiseFileName } from "./fileNames";
-import { buildTree } from "./buildFileTree";
+import { buildFileTree } from "./fileTree";
 
 interface IArgs {
     owner: string;
@@ -23,16 +23,13 @@ export const args = parse<IArgs>({
     const files = discoverFiles(path, ...(args.exclude || []));
     console.log(`discovered ${files.length} typescript files`);
 
-    buildTree(path, files);
+    const fileTree = buildFileTree(path, files);
 
-    var count = 0;
-    var total = 0;
-    for (var file of files) {
-        console.log(`analysing ${file}`);
-        const [_, tree] = extract(file);
-        count++;
-        total += tree.getEntropy();
-    }
-    total += computeEntropy(count);
-    console.log(`project entropy calculated: ${total}`);
+    const analysers = fileTree.getFileEntropyAnalysers();
+
+    await Promise.all(analysers.map((x) => x()));
+
+    const treeEntropy = fileTree.recomputeTreeEntropy();
+
+    console.log(`project entropy calculated: ${treeEntropy}`);
 })();
