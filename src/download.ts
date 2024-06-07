@@ -1,7 +1,7 @@
 import { Octokit } from "@octokit/rest";
 import { parse } from "ts-command-line-args";
 import { sanitiseFileName } from "./fileNames";
-import { writeFileSync, mkdirSync, createWriteStream, existsSync } from "fs";
+import { mkdirSync, createWriteStream, existsSync } from "fs";
 import { Entry, fromBuffer } from "yauzl";
 
 interface IArgs {
