@@ -15,13 +15,13 @@ next step: figure out how to get an AST that represents all the different tokens
 
 tests that could confirm or deny
 
-- Projects that have been abandoned due to tech debt (if I can find any) will have a very high entropy
-- Codebases should have their entropy decrease following (large?) refactors
-- Codebase entropy should increase as more functionality is added
-- Codebase entropy per loc (is loc a good measure here?) should be lower when written by more experienced engineers
-- Codebases with high entropy should have a greater tendency to increase that entropy with new additions
-- Codebases with high entropy should be more difficult to contribute to, with those contributions taking longer
-- Codebases with high entropy should have more bugs
+-   Projects that have been abandoned due to tech debt (if I can find any) will have a very high entropy
+-   Codebases should have their entropy decrease following (large?) refactors
+-   Codebase entropy should increase as more functionality is added
+-   Codebase entropy per loc (is loc a good measure here?) should be lower when written by more experienced engineers
+-   Codebases with high entropy should have a greater tendency to increase that entropy with new additions
+-   Codebases with high entropy should be more difficult to contribute to, with those contributions taking longer
+-   Codebases with high entropy should have more bugs
 
 Does all of this tie into SATD?
 https://arxiv.org/abs/2311.12019#:~:text=Developers%20frequently%20acknowledge%20these%20sub,admitted%20technical%20debt%20(SATD).
@@ -29,8 +29,8 @@ https://xin-xia.github.io/publication/emse172.pdf
 
 Expectations for entropy calculation
 
-- entropy of procedural script with no function declarations (Sp) should meet: Sp ∝ ln(loc)
-- script with reused functions with same loc (Sf) should meet: Sf < Sp
+-   entropy of procedural script with no function declarations (Sp) should meet: Sp ∝ ln(loc)
+-   script with reused functions with same loc (Sf) should meet: Sf < Sp
 
 Entropy should be the average of the entropies of each node. How many rearrangements of the children are possible?
 
@@ -51,3 +51,8 @@ how can we factor in the number of times a particular module is referenced?
 Can you construct a tree out of module references? probably more of a graph?
 
 Maybe I could take inspiration from the dependencies entropy pictured above
+
+entropy per loc represents a sort of... complexity density.
+You would expect this to increase as a project matures, adding more edge cases and error handling.
+
+worth outputting the entropy hot spots?

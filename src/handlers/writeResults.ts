@@ -9,7 +9,8 @@ export type Results = {
     entropy: number;
 };
 
-const headers: string = "owner, repo, ref, size, loc, entropy\n";
+const headers: string =
+    "owner, repo, ref, size, loc, entropy, entropy per loc\n";
 
 export const writeResults: (results: Results) => void = ({
     owner,
@@ -33,7 +34,9 @@ export const writeResults: (results: Results) => void = ({
 
     appendFileSync(
         resultsFilePath,
-        `${owner}, ${repo}, ${ref}, ${size}, ${loc}, ${entropy}\n`
+        `${owner}, ${repo}, ${ref}, ${size}, ${loc}, ${entropy}, ${
+            entropy / loc
+        }\n`
     );
     console.log("Results written");
 };

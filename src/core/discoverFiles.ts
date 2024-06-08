@@ -1,12 +1,14 @@
-import * as glob from "glob";
+import { sync } from "glob";
 import { minimatch } from "minimatch";
 
-
-export const discoverFiles: (path: string, ...filters: string[]) => string[] = (path, ...filters: string[]) => {
-    var result = glob.sync(path + '/**/*.ts')
+export const discoverFiles: (path: string, ...filters: string[]) => string[] = (
+    path,
+    ...filters: string[]
+) => {
+    var result = sync(path + "/**/*.{j,t}s?(x)");
     for (var filter of filters) {
-        result = result.filter(x => !minimatch(x, filter))
+        result = result.filter((x) => !minimatch(x, filter));
     }
 
-    return result
+    return result;
 };

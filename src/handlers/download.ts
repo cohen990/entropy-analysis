@@ -24,17 +24,21 @@ export const download: (args: DownloadArgs) => Promise<number> = async ({
         ref,
     });
 
-    console.log(
-        `Github responded with a ${result.status} and ${result.headers["content-length"]} bytes`
-    );
-
-    if ((result.status as any) != 200) {
+    if (
+        (result.status as any) != 200 ||
+        (result.data as ArrayBuffer).byteLength == 0
+    ) {
         console.log("Error downloading from github...");
         console.log(result);
         return;
     }
 
     const analysablesRoot = `${process.cwd()}/analysables`;
+
+    if (!existsSync(analysablesRoot)) {
+        mkdirSync(analysablesRoot);
+    }
+
     const targetDirectory =
         analysablesRoot + "/" + sanitiseFileName(`${owner}-${repo}`);
     if (!existsSync(targetDirectory)) {
@@ -76,7 +80,6 @@ const unzip: (buffer: Buffer, path: string) => Promise<number> = (
                 }
             });
             zipfile.on("end", () => {
-                console.log("end");
                 console.log(`Extracted ${totalBytes} of data`);
                 resolve(totalBytes);
             });

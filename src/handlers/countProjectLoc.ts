@@ -1,7 +1,7 @@
 import { discoverFiles } from "../core/discoverFiles";
-import { countLoc } from "../core/countLoc";
 import { sanitiseFileName } from "../core/fileNames";
 import { AnalyseProjectArgs } from "./analyseProjectArgs";
+import { readFileSync, statSync } from "fs";
 
 export const countProjectLoc: (
     args: AnalyseProjectArgs
@@ -21,3 +21,12 @@ export const countProjectLoc: (
     console.log(`counted ${total} lines of code across ${count} files.`);
     return total;
 };
+
+export function countLoc(file: string): number {
+    if (!statSync(file).isFile()) {
+        return 0;
+    }
+
+    let content = readFileSync(file).toString("utf-8");
+    return content.split("\n").length;
+}

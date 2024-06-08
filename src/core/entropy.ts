@@ -1,10 +1,8 @@
 export const computeEntropy = (input: number) => {
-    const entropy = natlog(factorial(input));
-
-    return entropy;
+    return naturalLog(factorial(input));
 };
 
-const natlog: (input: bigint) => number = (input) => {
+const naturalLog: (input: bigint) => number = (input) => {
     if (input < 0) return NaN;
 
     const inputAsString = input.toString(16);
@@ -17,7 +15,9 @@ const natlog: (input: bigint) => number = (input) => {
     );
 };
 const factorial: (number: number) => bigint = (number) => {
-    var rval = BigInt(1);
-    for (var i = 2; i <= number; i++) rval = rval * BigInt(i);
-    return rval;
+    var result = BigInt(1);
+    for (var i = 2; i <= number; i++) {
+        result = result * BigInt(i);
+    }
+    return result;
 };

@@ -34,15 +34,11 @@ export class EntropyNode {
     }
 
     getEntropy(): number {
-        const entropy = this.#entropy;
-        return (
-            entropy +
-            this.#children
-                .map((child) => child.getEntropy())
-                .reduce(
-                    (previousValue, nextValue) => previousValue + nextValue,
-                    0
-                )
-        );
+        return this.#children
+            .map((child) => child.getEntropy())
+            .reduce(
+                (previousValue, nextValue) => previousValue + nextValue,
+                this.#entropy
+            );
     }
 }
