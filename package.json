@@ -7,7 +7,8 @@
         "analyse-project": "ts-node src/cli/analyseProject.ts",
         "count-loc": "ts-node src/cli/countProjectLoc.ts",
         "download": "ts-node src/cli/download.ts",
-        "download-and-analyse": "ts-node src/cli/downloadAndAnalyse.ts",
+        "download-and-analyse": "node -r ts-node/register src/cli/downloadAndAnalyse.ts",
+        "download-and-analyse:profiled": "node -r ts-node/register --prof src/cli/downloadAndAnalyse.ts",
         "test": "jest"
     },
     "keywords": [],
