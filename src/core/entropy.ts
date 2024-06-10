@@ -10,15 +10,15 @@ const naturalLog: (input: bigint) => number = (input) => {
 
     return (
         Math.log(16) *
-        (inputAsString.length - fifteenSignificantFigures.length) +
+            (inputAsString.length - fifteenSignificantFigures.length) +
         Math.log(("0x" + fifteenSignificantFigures) as any)
     );
 };
 
 export const factorial: (number: number) => bigint = (number) => {
-    var result = BigInt(1);
+    var result = BigInt(1) as bigint;
     for (var i = 2; i <= number; i++) {
-        result = result * BigInt(i);
+        result = result * (BigInt(i) as bigint);
     }
     return result;
 };
