@@ -18,6 +18,7 @@ export const analyseProject: (
 
     const batchSize = 50;
     for (var i = 0; i < batchSize; i += batchSize) {
+        console.log(`Analysing files ${i} to ${i + batchSize}`);
         await Promise.all(analysers.slice(i, i + batchSize).map((x) => x()));
     }
 
