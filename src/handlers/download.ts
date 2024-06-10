@@ -6,32 +6,47 @@ import { Entry, fromBuffer } from "yauzl";
 export interface DownloadArgs {
     owner: string;
     repo: string;
-    ref: string;
 }
 
-export const download: (args: DownloadArgs) => Promise<number> = async ({
-    owner,
-    repo,
-    ref,
-}) => {
-    console.log(`Downloading ${owner}/${repo}#${ref}`);
+export interface DownloadResult {
+    sizeInBytes: number;
+    openIssuesCount: number;
+    allLanguages: { [key: string]: number };
+    primaryLanguage: string;
+    refSha: string;
+}
 
-    const octokit = new Octokit();
+export const download: (
+    args: DownloadArgs
+) => Promise<DownloadResult | undefined> = async ({ owner, repo }) => {
+    console.log(`Downloading ${owner}/${repo}`);
 
-    const result = await octokit.rest.repos.downloadZipballArchive({
+    const octokit = new Octokit({
+        auth: process.env["GITHUB_ACCESS_TOKEN"],
+    });
+
+    const repoResponse = await octokit.rest.repos.get({
+        owner,
+        repo,
+    });
+    const ref = repoResponse.data.default_branch;
+
+    const languagesResponse = await octokit.rest.repos.listLanguages({
+        owner,
+        repo,
+    });
+
+    const commitResponse = await octokit.rest.repos.getCommit({
         owner,
         repo,
         ref,
     });
 
-    if (
-        (result.status as any) != 200 ||
-        (result.data as ArrayBuffer).byteLength == 0
-    ) {
-        console.log("Error downloading from github...");
-        console.log(result);
-        return;
-    }
+    const zipResponse = await octokit.rest.repos.downloadZipballArchive({
+        owner,
+        repo,
+        ref,
+    });
 
     const analysablesRoot = `${process.cwd()}/analysables`;
 
@@ -45,9 +60,19 @@ export const download: (args: DownloadArgs) => Promise<number> = async ({
         mkdirSync(targetDirectory);
     }
 
-    const buffer = Buffer.from(result.data as ArrayBuffer);
+    const buffer = Buffer.from(zipResponse.data as ArrayBuffer);
 
-    return await unzip(buffer, targetDirectory);
+    const unzipSize = await unzip(buffer, targetDirectory);
+
+    const result: DownloadResult = {
+        sizeInBytes: unzipSize,
+        openIssuesCount: repoResponse.data.open_issues_count,
+        allLanguages: languagesResponse.data,
+        primaryLanguage: Object.keys(languagesResponse.data)[0],
+        refSha: commitResponse.data.sha,
+    };
+
+    return result;
 };
 
 const unzip: (buffer: Buffer, path: string) => Promise<number> = (

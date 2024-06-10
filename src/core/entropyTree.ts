@@ -1,5 +1,5 @@
 import { Node, SyntaxKind, SourceFile } from "typescript";
-import { computeEntropy } from "./entropy";
+import { computeEntropy, factorial } from "./entropy";
 
 export const EntropyTreeRoot: (sourceFile: SourceFile) => EntropyNode = (
     sourceFile
@@ -9,7 +9,7 @@ export const EntropyTreeRoot: (sourceFile: SourceFile) => EntropyNode = (
 
 export class EntropyNode {
     #node: Node;
-    #entropy: number;
+    #omega: bigint;
     #children: EntropyNode[];
     #sourceFile: SourceFile;
 
@@ -28,17 +28,17 @@ export class EntropyNode {
                 .getChildren(this.#sourceFile)
                 .filter((x) => x)
                 .map((child) => new EntropyNode(child, this.#sourceFile));
-            this.#entropy = computeEntropy(this.#children.length);
+            this.#omega = factorial(this.#children.length);
         }
         return this.#children;
     }
 
-    getEntropy(): number {
+    getOmega(): bigint {
         return this.#children
-            .map((child) => child.getEntropy())
+            .map((child) => child.getOmega())
             .reduce(
                 (previousValue, nextValue) => previousValue + nextValue,
-                this.#entropy
+                this.#omega
             );
     }
 }

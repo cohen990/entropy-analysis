@@ -8,4 +8,4 @@ export const args = parse<AnalyseProjectArgs>({
     exclude: { type: String, alias: "x", optional: true, lazyMultiple: true },
 });
 
-(async () => analyseProject(args))();
+(async () => console.log(await analyseProject(args)))();
