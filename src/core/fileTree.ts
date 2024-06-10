@@ -6,7 +6,7 @@ export const buildFileTree: (rootPath: string, paths: string[]) => FileNode = (
     rootPath,
     paths
 ) => {
-    const localPaths = paths.map((x) => x.replace(rootPath, ""));
+    const localPaths = paths.map((x) => x.replace(`${rootPath}/`, ""));
 
     var root: FileNode;
     const addToRoot: (keys: string[]) => void = (keys) => {
@@ -22,6 +22,13 @@ export const buildFileTree: (rootPath: string, paths: string[]) => FileNode = (
     }
 
     return root;
+};
+
+export type AnalysisParameters = {
+    fileName: string;
+    filePath: string;
+    fullFilePath: string;
+    rootPath: string;
 };
 
 class FileNode {
@@ -60,6 +67,7 @@ class FileNode {
     }
 
     print() {
+        console.log(`${this.path.replace(this.rootPath, "")}${this.name}`);
         Object.values(this.#children).forEach((x) => x.print());
     }
 
@@ -70,6 +78,26 @@ class FileNode {
 
         analysers.push(() => FileNode.computeFilePermutations(this, cache));
         return analysers;
+    }
+
+    getAnalysisParameters(): AnalysisParameters[] {
+        if (!this.isLeaf()) {
+            return Object.values(this.#children).flatMap((x) =>
+                x.getAnalysisParameters()
+            );
+        } else {
+            const fileName =
+                this.name == "_constructor" ? "constructor" : this.name;
+            const fullFilePath = this.path + fileName;
+            return [
+                {
+                    fileName: this.name,
+                    filePath: this.path,
+                    rootPath: this.rootPath,
+                    fullFilePath,
+                },
+            ];
+        }
     }
 
     isLeaf() {
@@ -111,5 +139,16 @@ class FileNode {
         }
 
         return this.omega;
+    }
+
+    setFileOmega(nodePath: string[], omega: bigint) {
+        if (nodePath[0] == "constructor") {
+            nodePath[0] = "_constructor";
+        }
+        if (this.#children[nodePath[0]]) {
+            this.#children[nodePath[0]].setFileOmega(nodePath.slice(1), omega);
+        } else {
+            this.fileOmega = omega;
+        }
     }
 }
