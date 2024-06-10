@@ -8,6 +8,7 @@
         "count-loc": "ts-node src/cli/countProjectLoc.ts",
         "download": "ts-node src/cli/download.ts",
         "download-and-analyse": "node -r ts-node/register src/cli/downloadAndAnalyse.ts",
+        "clean": "rm -rf ./analysables && rm -rf ./.cache",
         "test": "jest"
     },
     "keywords": [],
