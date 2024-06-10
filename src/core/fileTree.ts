@@ -47,11 +47,13 @@ class FileNode {
                 keys[0]
             );
         }
-        if (!this.#children[keys[0]] === undefined) {
+
+        if (this.#children[keys[0]] === undefined) {
             console.error(
                 `somehow failed to add the node ${keys[0]} to ${this.name}`
             );
         }
+
         if (!this.#children[keys[0]].add) {
             console.error(
                 `There has been some weirdness. ${JSON.stringify(
