@@ -39,55 +39,23 @@ export const download: (
     });
     const ref = repoResponse.data.default_branch;
 
+    const commitResponse = await octokit.rest.repos.getCommit({
+        owner,
+        repo,
+        ref,
+    });
+
     return await cache.cache(
         async () => {
-            const languagesResponse = await octokit.rest.repos.listLanguages({
-                owner,
-                repo,
-            });
-
-            const commitResponse = await octokit.rest.repos.getCommit({
-                owner,
-                repo,
-                ref,
-            });
-
-            const zipResponse = await octokit.rest.repos.downloadZipballArchive(
-                {
-                    owner,
-                    repo,
-                    ref,
-                }
-            );
-
-            const analysablesRoot = `${process.cwd()}/analysables`;
-
-            if (!existsSync(analysablesRoot)) {
-                mkdirSync(analysablesRoot);
-            }
-
-            const targetDirectory =
-                analysablesRoot + "/" + sanitiseFileName(`${owner}-${repo}`);
-            if (!existsSync(targetDirectory)) {
-                mkdirSync(targetDirectory);
-            }
-
-            const buffer = Buffer.from(zipResponse.data as ArrayBuffer);
-
-            const unzipSize = await unzip(buffer, targetDirectory);
-
-            const result: DownloadResult = {
-                sizeInBytes: unzipSize,
+            const results = await downloadRepo(octokit, owner, repo, ref);
+            return {
+                ...results,
                 openIssuesCount: repoResponse.data.open_issues_count,
-                allLanguages: languagesResponse.data,
-                primaryLanguage: Object.keys(languagesResponse.data)[0],
                 refSha: commitResponse.data.sha,
             };
-
-            return result;
         },
         project,
-        ref
+        commitResponse.data.sha
     );
 };
 
@@ -127,3 +95,37 @@ const unzip: (buffer: Buffer, path: string) => Promise<number> = (
         });
     });
 };
+async function downloadRepo(octokit, owner: string, repo: string, ref: string) {
+    const languagesResponse = await octokit.rest.repos.listLanguages({
+        owner,
+        repo,
+    });
+
+    const zipResponse = await octokit.rest.repos.downloadZipballArchive({
+        owner,
+        repo,
+        ref,
+    });
+
+    const analysablesRoot = `${process.cwd()}/analysables`;
+
+    if (!existsSync(analysablesRoot)) {
+        mkdirSync(analysablesRoot);
+    }
+
+    const targetDirectory =
+        analysablesRoot + "/" + sanitiseFileName(`${owner}-${repo}`);
+    if (!existsSync(targetDirectory)) {
+        mkdirSync(targetDirectory);
+    }
+
+    const buffer = Buffer.from(zipResponse.data as ArrayBuffer);
+
+    const unzipSize = await unzip(buffer, targetDirectory);
+
+    return {
+        sizeInBytes: unzipSize,
+        allLanguages: languagesResponse.data,
+        primaryLanguage: Object.keys(languagesResponse.data)[0],
+    };
+}
