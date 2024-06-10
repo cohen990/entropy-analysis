@@ -28,7 +28,6 @@ export const writeResults: (results: Results) => void = ({
     filesCount,
     entropy,
 }) => {
-    console.log("Writing results");
     const outDir = `${process.cwd()}/out`;
     const resultsFilePath = `${outDir}/results.csv`;
 

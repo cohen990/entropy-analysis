@@ -18,22 +18,18 @@ export class AnalysisCache<T> {
     }
 
     async cache(func: () => Promise<T>, type: string, key: string): Promise<T> {
-        console.log(`cache item type: ${type}, key: ${key}`);
         const cacheItemPath = `${this.cacheDirectory}/${type}`;
         const cacheItemFilePath = `${cacheItemPath}/${key}`;
         if (!existsSync(cacheItemPath)) {
             mkdirSync(cacheItemPath, { recursive: true });
         }
         if (!existsSync(cacheItemFilePath)) {
-            console.log("Caching result");
             const result = await func();
             writeFileSync(cacheItemFilePath, this.serialise(result), {
                 encoding: "utf-8",
             });
-            console.log(`Written to ${cacheItemFilePath}`);
             return result;
         } else {
-            console.log("Retrieving cached result");
             return this.deserialise(
                 readFileSync(cacheItemFilePath).toString("utf-8")
             );
@@ -56,7 +52,7 @@ export const initialiseCache: <T>(
 
 export const fileHasher = (fullFilePath: string) => {
     if (!existsSync(fullFilePath)) {
-        console.log("file doesn't exist");
+        console.error(`file doesn't exist: ${fullFilePath}`);
     }
 
     const content = readFileSync(fullFilePath);
