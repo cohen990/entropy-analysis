@@ -22,10 +22,6 @@ If you want to analyse repos within a certain organisation, when creating the ke
 
 # Scripts
 
-## analyse-file
-
-Legacy. Don't use
-
 args:
 
 -   `-o --owner <the repo owner>`
@@ -35,6 +31,10 @@ args:
 -   `-m --maxLoc <number>`
 
 If you want to exclude multiple patterns, use `-x <pattern1> -x <pattern2>`
+
+## analyse-file
+
+Legacy. Don't use
 
 ## npm run analyse-project
 
