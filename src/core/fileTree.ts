@@ -1,7 +1,6 @@
 import { AnalysisCache, fileHasher } from "./cache";
 import { extract } from "./compiler";
 import { factorial } from "./entropy";
-import { bigintDeserialiser, bigintSerialiser } from "./serialiser";
 
 export const buildFileTree: (rootPath: string, paths: string[]) => FileNode = (
     rootPath,
@@ -91,9 +90,7 @@ class FileNode {
                     return tree.getOmega();
                 },
                 fullFilePath.replace(file.rootPath, ""),
-                fileHasher(fullFilePath),
-                bigintSerialiser,
-                bigintDeserialiser
+                fileHasher(fullFilePath)
             );
         } else {
         }

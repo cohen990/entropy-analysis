@@ -1,8 +1,9 @@
-import { initializeOmegaCache } from "../core/cache";
+import { initialiseCache } from "../core/cache";
 import { discoverFiles } from "../core/discoverFiles";
 import { computeEntropy } from "../core/entropy";
 import { sanitiseFileName } from "../core/fileNames";
 import { buildFileTree } from "../core/fileTree";
+import { bigintDeserialiser, bigintSerialiser } from "../core/serialiser";
 import { AnalyseProjectArgs } from "./analyseProjectArgs";
 
 export const analyseProject: (
@@ -11,7 +12,12 @@ export const analyseProject: (
     const projectKey = sanitiseFileName(`${owner}-${repo}`);
     const analysableKey = sanitiseFileName(`${projectKey}-${ref.slice(0, 7)}`);
     const path = `${process.cwd()}/analysables/${projectKey}/${analysableKey}`;
-    const cache = initializeOmegaCache(projectKey);
+    const cache = initialiseCache<bigint>(
+        projectKey,
+        "omega",
+        bigintSerialiser,
+        bigintDeserialiser
+    );
 
     const files = discoverFiles(path, ...(exclude || []));
     console.log(`discovered ${files.length} typescript files`);
