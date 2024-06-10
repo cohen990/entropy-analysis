@@ -18,6 +18,7 @@ export class AnalysisCache<T> {
     }
 
     async cache(func: () => Promise<T>, type: string, key: string): Promise<T> {
+        console.log(`cache item type: ${type}, key: ${key}`);
         const cacheItemPath = `${this.cacheDirectory}/${type}`;
         const cacheItemFilePath = `${cacheItemPath}/${key}`;
         if (!existsSync(cacheItemPath)) {
