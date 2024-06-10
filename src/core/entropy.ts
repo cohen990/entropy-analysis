@@ -1,5 +1,5 @@
-export const computeEntropy = (input: number) => {
-    return naturalLog(factorial(input));
+export const computeEntropy = (input: bigint) => {
+    return naturalLog(input);
 };
 
 const naturalLog: (input: bigint) => number = (input) => {
@@ -14,7 +14,7 @@ const naturalLog: (input: bigint) => number = (input) => {
         Math.log(("0x" + fifteenSignificantFigures) as any)
     );
 };
-const factorial: (number: number) => bigint = (number) => {
+export const factorial: (number: number) => bigint = (number) => {
     var result = BigInt(1);
     for (var i = 2; i <= number; i++) {
         result = result * BigInt(i);

@@ -1,5 +1,5 @@
 import { extract } from "./compiler";
-import { computeEntropy } from "./entropy";
+import { computeEntropy, factorial } from "./entropy";
 
 export const buildFileTree: (rootPath: string, paths: string[]) => FileNode = (
     rootPath,
@@ -26,8 +26,8 @@ export const buildFileTree: (rootPath: string, paths: string[]) => FileNode = (
 class FileNode {
     readonly path: string;
     readonly name: string;
-    fileEntropy: number;
-    entropy: number;
+    fileOmega: bigint;
+    omega: bigint;
     #children: { [Key: string]: FileNode };
 
     constructor(path: string, name: string) {
@@ -47,22 +47,32 @@ class FileNode {
                 keys[0]
             );
         }
+        if (!this.#children[keys[0]] === undefined) {
+            console.error(
+                `somehow failed to add the node ${keys[0]} to ${this.name}`
+            );
+        }
+        if (!this.#children[keys[0]].add) {
+            console.error(
+                `There has been some weirdness. ${JSON.stringify(
+                    this.#children[keys[0]]
+                )}`
+            );
+        }
 
         this.#children[keys[0]].add(keys.slice(1));
     }
 
     print() {
-        console.log(`${this.path + this.name} - entropy ${this.entropy}`);
-
         Object.values(this.#children).forEach((x) => x.print());
     }
 
-    getFileEntropyAnalysers(): (() => Promise<void>)[] {
+    getFileAnalysers(): (() => Promise<void>)[] {
         const analysers: (() => Promise<void>)[] = Object.values(
             this.#children
-        ).flatMap((x) => x.getFileEntropyAnalysers());
+        ).flatMap((x) => x.getFileAnalysers());
 
-        analysers.push(() => FileNode.computeFileEntropy(this));
+        analysers.push(() => FileNode.computeFilePermutations(this));
         return analysers;
     }
 
@@ -70,27 +80,28 @@ class FileNode {
         return Object.values(this.#children).length == 0;
     }
 
-    static async computeFileEntropy(file: FileNode): Promise<void> {
+    static async computeFilePermutations(file: FileNode): Promise<void> {
         if (file.isLeaf()) {
             const entropyTree = await extract(file.path + file.name);
-            file.fileEntropy = entropyTree.getEntropy();
+            file.fileOmega = entropyTree.getOmega();
         } else {
         }
     }
 
-    recomputeTreeEntropy(): number {
-        const localEntropy = this.fileEntropy || 0;
-        computeEntropy(Object.values(this.#children).length);
+    recomputeTreeOmega(): bigint {
+        const localOmega =
+            (this.fileOmega || BigInt(0)) +
+            factorial(Object.values(this.#children).length);
 
         if (this.isLeaf()) {
-            this.entropy = localEntropy;
+            this.omega = localOmega;
         } else {
-            this.entropy = Object.values(this.#children).reduce(
-                (x, y) => x + y.recomputeTreeEntropy(),
-                localEntropy
+            this.omega = Object.values(this.#children).reduce(
+                (x, y) => x + y.recomputeTreeOmega(),
+                localOmega
             );
         }
 
-        return this.entropy;
+        return this.omega;
     }
 }

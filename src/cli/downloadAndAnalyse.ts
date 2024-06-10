@@ -1,20 +1,36 @@
 import { parse } from "ts-command-line-args";
-import { AnalyseProjectArgs } from "../handlers/analyseProjectArgs";
-import { DownloadArgs, download } from "../handlers/download";
+import { DownloadAndAnalyseProjectArgs } from "../handlers/analyseProjectArgs";
+import { download } from "../handlers/download";
 import { analyseProject } from "../handlers/analyseProject";
 import { countProjectLoc } from "../handlers/countProjectLoc";
 import { writeResults } from "../handlers/writeResults";
 
-export const args = parse<AnalyseProjectArgs & DownloadArgs>({
+export const args = parse<DownloadAndAnalyseProjectArgs>({
     owner: { type: String, alias: "o", optional: true },
     repo: { type: String, alias: "r", optional: true },
-    ref: { type: String, alias: "f", optional: true },
+    maxLoc: { type: Number, alias: "m", optional: true },
     exclude: { type: String, alias: "x", optional: true, lazyMultiple: true },
 });
 
 (async () => {
-    const size = await download(args);
-    const loc = await countProjectLoc(args);
+    const repoDetails = await download(args);
+    const countLocResults = await countProjectLoc(args);
+    if (args.maxLoc && countLocResults.linesOfCode > args.maxLoc) {
+        console.log(
+            `Project has ${countLocResults.linesOfCode}. Greater than the requested max of ${args.maxLoc}. Skipping`
+        );
+        return;
+    }
     const entropy = await analyseProject(args);
-    await writeResults({ ...args, size, loc, entropy });
+    await writeResults({
+        ...args,
+        sizeInBytes: repoDetails.sizeInBytes,
+        loc: countLocResults.linesOfCode,
+        filesCount: countLocResults.filesCount,
+        entropy,
+        refSha: repoDetails.refSha,
+        languages: repoDetails.allLanguages,
+        openIssuesCount: repoDetails.openIssuesCount,
+        primaryLanguage: repoDetails.primaryLanguage,
+    });
 })();

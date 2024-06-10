@@ -7,6 +7,4 @@ export const args = parse<AnalyseFileArgs>({
     path: { type: String, alias: "p", optional: true },
 });
 
-(async () => {
-    analyseFile(args);
-})();
+(async () => console.log(await analyseFile(args)))();

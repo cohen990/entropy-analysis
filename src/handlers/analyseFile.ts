@@ -19,6 +19,6 @@ export const analyseFile: (args: AnalyseFileArgs) => Promise<void> = async ({
     console.log(`analysing ${file}`);
     const tree = extract(file);
 
-    const treeEntropy = tree.getEntropy();
+    const treeEntropy = tree.getOmega();
     console.log(`tree entropy computed at ${treeEntropy}`);
 };

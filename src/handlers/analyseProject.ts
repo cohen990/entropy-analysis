@@ -1,4 +1,5 @@
 import { discoverFiles } from "../core/discoverFiles";
+import { computeEntropy } from "../core/entropy";
 import { sanitiseFileName } from "../core/fileNames";
 import { buildFileTree } from "../core/fileTree";
 import { AnalyseProjectArgs } from "./analyseProjectArgs";
@@ -13,11 +14,16 @@ export const analyseProject: (
 
     const fileTree = buildFileTree(path, files);
 
-    const analysers = fileTree.getFileEntropyAnalysers();
+    const analysers = fileTree.getFileAnalysers();
 
-    await Promise.all(analysers.map((x) => x()));
+    const batchSize = 50;
+    for (var i = 0; i < batchSize; i += batchSize) {
+        await Promise.all(analysers.slice(i, i + batchSize).map((x) => x()));
+    }
 
-    const treeEntropy = fileTree.recomputeTreeEntropy();
+    const treeOmega = fileTree.recomputeTreeOmega();
+
+    const treeEntropy = computeEntropy(treeOmega);
 
     console.log(`project entropy calculated: ${treeEntropy}`);
     return treeEntropy;

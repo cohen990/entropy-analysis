@@ -1,11 +1,16 @@
 import { discoverFiles } from "../core/discoverFiles";
 import { sanitiseFileName } from "../core/fileNames";
-import { AnalyseProjectArgs } from "./analyseProjectArgs";
 import { readFileSync, statSync } from "fs";
+import { AnalyseProjectArgs } from "./analyseProjectArgs";
+
+export interface CountProjectLocResults {
+    linesOfCode: number;
+    filesCount: number;
+}
 
 export const countProjectLoc: (
     args: AnalyseProjectArgs
-) => Promise<number> = async ({ owner, repo, exclude }) => {
+) => Promise<CountProjectLocResults> = async ({ owner, repo, exclude }) => {
     console.log(`Counting lines of code for ${owner}/${repo}`);
     const projectDirectory = sanitiseFileName(`${owner}-${repo}`);
     const path = `${process.cwd()}/analysables/${projectDirectory}/`;
@@ -19,7 +24,7 @@ export const countProjectLoc: (
     }
 
     console.log(`counted ${total} lines of code across ${count} files.`);
-    return total;
+    return { filesCount: count, linesOfCode: total };
 };
 
 export function countLoc(file: string): number {
