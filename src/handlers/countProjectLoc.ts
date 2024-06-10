@@ -10,10 +10,16 @@ export interface CountProjectLocResults {
 
 export const countProjectLoc: (
     args: AnalyseProjectArgs
-) => Promise<CountProjectLocResults> = async ({ owner, repo, exclude }) => {
+) => Promise<CountProjectLocResults> = async ({
+    owner,
+    repo,
+    exclude,
+    ref,
+}) => {
     console.log(`Counting lines of code for ${owner}/${repo}`);
-    const projectDirectory = sanitiseFileName(`${owner}-${repo}`);
-    const path = `${process.cwd()}/analysables/${projectDirectory}/`;
+    const projectKey = sanitiseFileName(`${owner}-${repo}`);
+    const analysableKey = sanitiseFileName(`${projectKey}-${ref}`);
+    const path = `${process.cwd()}/analysables/${projectKey}/${analysableKey}`;
     const files = discoverFiles(path, ...(exclude || []));
 
     var count = 0;

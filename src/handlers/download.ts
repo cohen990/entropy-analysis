@@ -51,7 +51,7 @@ export const download: (
             return {
                 ...results,
                 openIssuesCount: repoResponse.data.open_issues_count,
-                refSha: commitResponse.data.sha,
+                refSha: commitResponse.data.sha.slice(0, 7),
             };
         },
         project,
@@ -95,6 +95,7 @@ const unzip: (buffer: Buffer, path: string) => Promise<number> = (
         });
     });
 };
+
 async function downloadRepo(octokit, owner: string, repo: string, ref: string) {
     const languagesResponse = await octokit.rest.repos.listLanguages({
         owner,
