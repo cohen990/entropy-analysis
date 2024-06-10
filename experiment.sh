@@ -1,4 +1,4 @@
-rm ./out/results.csv
+npm run clean:results
 run () {
     npm run download-and-analyse -- -o $1 -r $2 -x "**/*.min.*" -x "**/*.map" -x "**/locale/**"
 }

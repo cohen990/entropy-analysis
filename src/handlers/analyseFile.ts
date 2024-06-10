@@ -1,5 +1,5 @@
 import { extract } from "../core/compiler";
-import { sanitiseFileName } from "../core/fileNames";
+import { sanitiseFileName } from "../core/fileSystem";
 
 export interface AnalyseFileArgs {
     owner: string;
