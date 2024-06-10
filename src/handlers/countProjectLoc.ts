@@ -1,7 +1,8 @@
 import { discoverFiles } from "../core/discoverFiles";
-import { sanitiseFileName } from "../core/fileNames";
+import { correctDirectoryCasing, sanitiseFileName } from "../core/fileSystem";
 import { readFileSync, statSync } from "fs";
 import { AnalyseProjectArgs } from "./analyseProjectArgs";
+import { sync } from "glob";
 
 export interface CountProjectLocResults {
     linesOfCode: number;
@@ -19,7 +20,8 @@ export const countProjectLoc: (
     console.log(`Counting lines of code for ${owner}/${repo}`);
     const projectKey = sanitiseFileName(`${owner}-${repo}`);
     const analysableKey = sanitiseFileName(`${projectKey}-${ref}`);
-    const path = `${process.cwd()}/analysables/${projectKey}/${analysableKey}`;
+    const guessedPath = `${process.cwd()}/analysables/${projectKey}/${analysableKey}`;
+    const path = correctDirectoryCasing(guessedPath);
     const files = discoverFiles(path, ...(exclude || []));
 
     var count = 0;
