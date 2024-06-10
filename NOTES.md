@@ -56,3 +56,31 @@ entropy per loc represents a sort of... complexity density.
 You would expect this to increase as a project matures, adding more edge cases and error handling.
 
 worth outputting the entropy hot spots?
+
+
+S = k*ln(_omega)
+S = entropy
+k = boltzman constant
+ln = natural log
+_omega = number of configurations of the system
+
+a b c d e
+a d e b c
+5 items
+5!
+_omega = 120
+
+a b | c d e
+2 items & 3 items
+2! + 3! + 2!
+
+b a | e d c
+d c e | b a
+
+2! = 2
+3! = 6
+
+120 -> 14
+
+ln(120) > ln(14)
+

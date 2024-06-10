@@ -41,24 +41,14 @@ class FileNode {
             return;
         }
 
+        if (keys[0] == "constructor") {
+            keys[0] = "_constructor"
+        }
+
         if (this.#children[keys[0]] === undefined) {
             this.#children[keys[0]] = new FileNode(
                 this.path + this.name,
                 keys[0]
-            );
-        }
-
-        if (this.#children[keys[0]] === undefined) {
-            console.error(
-                `somehow failed to add the node ${keys[0]} to ${this.name}`
-            );
-        }
-
-        if (!this.#children[keys[0]].add) {
-            console.error(
-                `There has been some weirdness. ${JSON.stringify(
-                    this.#children[keys[0]]
-                )}`
             );
         }
 
@@ -84,7 +74,8 @@ class FileNode {
 
     static async computeFilePermutations(file: FileNode): Promise<void> {
         if (file.isLeaf()) {
-            const entropyTree = await extract(file.path + file.name);
+            const fileName = file.name == "_constructor" ? "constructor" : file.name
+            const entropyTree = await extract(file.path + fileName);
             file.fileOmega = entropyTree.getOmega();
         } else {
         }
