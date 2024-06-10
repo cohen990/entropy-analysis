@@ -12,7 +12,7 @@ export const analyseProject: (
     args: AnalyseProjectArgs
 ) => Promise<number> = async ({ owner, repo, exclude, ref }) => {
     const projectKey = sanitiseFileName(`${owner}-${repo}`);
-    const analysableKey = sanitiseFileName(`${projectKey}-${ref.slice(0, 7)}`);
+    const analysableKey = sanitiseFileName(`${projectKey}-${ref}`);
     const path = `${process.cwd()}/analysables/${projectKey}/${analysableKey}`;
     const cache = initialiseCache<bigint>(
         projectKey,
@@ -22,28 +22,37 @@ export const analyseProject: (
     );
 
     const files = discoverFiles(path, ...(exclude || []));
-    console.log(`discovered ${files.length} files`);
 
     const fileTree = buildFileTree(path, files);
 
-    const analysisParameters = fileTree.getAnalysisParameters();
+    var analysisParameters = fileTree.getAnalysisParameters();
 
-    console.log(`about to create ${analysisParameters.length} workers`);
+    var head = 0;
+    var batchSize = 10;
 
-    const promises: Promise<void>[] = analysisParameters.map(async (x) => {
-        const omega = await cache.cache(
-            analyseWithWorker(x),
-            x.fullFilePath.replace(x.rootPath, ""),
-            fileHasher(x.fullFilePath)
-        );
+    console.log(
+        `processing ${analysisParameters.length} files in batches of ${batchSize}`
+    );
 
-        const nodePath = `${x.filePath.replace(`${x.rootPath}/`, "")}${
-            x.fileName
-        }`.split("/");
-        fileTree.setFileOmega(nodePath, omega);
-    });
+    while (head < analysisParameters.length) {
+        const batchAnalyses = analysisParameters.slice(head, head + batchSize);
+        const promises: Promise<void>[] = batchAnalyses.map(async (x) => {
+            const omega = await cache.cache(
+                analyseWithWorker(x),
+                x.fullFilePath.replace(x.rootPath, ""),
+                fileHasher(x.fullFilePath)
+            );
 
-    await Promise.all(promises);
+            const nodePath = `${x.filePath.replace(`${x.rootPath}/`, "")}${
+                x.fileName
+            }`.split("/");
+            fileTree.setFileOmega(nodePath, omega);
+        });
+
+        await Promise.all(promises);
+        head += batchSize;
+        console.log(`${head} completed.`);
+    }
 
     const treeOmega = fileTree.recomputeTreeOmega();
 

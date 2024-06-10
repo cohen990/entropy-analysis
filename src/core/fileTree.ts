@@ -148,9 +148,6 @@ class FileNode {
         if (this.#children[nodePath[0]]) {
             this.#children[nodePath[0]].setFileOmega(nodePath.slice(1), omega);
         } else {
-            console.log(
-                `Setting omega for ${this.name} to ${omega.toString()}`
-            );
             this.fileOmega = omega;
         }
     }

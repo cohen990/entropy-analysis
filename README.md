@@ -63,3 +63,8 @@ The main way to use this app. Downloads the repo, counts the lines, analyses the
 ## npm run clean
 
 Deletes the contents of `./.cache`, `./out`, `./analysables`. No confirmation. Make sure you have your results backed up somewhere :)
+
+N.B.
+
+1. The system caches results on your local fs. These persist between runs and even between updates to the repo (if the file hash remains the same). If things look weird, try to run `npm run clean`
+2. The system spawns worker threads. 10 at a time. There's no cli params to modify this. Feel free to go into `./src/handlers/analyseProject.ts` and update `batchSize` to whatever number is kind to your pc
