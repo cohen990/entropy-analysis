@@ -24,7 +24,7 @@ export const buildFileTree: (rootPath: string, paths: string[]) => FileNode = (
     return root;
 };
 
-export type AnalysisParameters = {
+export type FileProperties = {
     fileName: string;
     filePath: string;
     fullFilePath: string;
@@ -80,10 +80,10 @@ class FileNode {
         return analysers;
     }
 
-    getAnalysisParameters(): AnalysisParameters[] {
+    flattenToProperties(): FileProperties[] {
         if (!this.isLeaf()) {
             return Object.values(this.#children).flatMap((x) =>
-                x.getAnalysisParameters()
+                x.flattenToProperties()
             );
         } else {
             const fileName =

@@ -1,5 +1,5 @@
 import { Octokit } from "@octokit/rest";
-import { sanitiseFileName } from "../core/fileNames";
+import { sanitiseFileName } from "../core/fileSystem";
 import { mkdirSync, createWriteStream, existsSync } from "fs";
 import { Entry, fromBuffer } from "yauzl";
 import { initialiseCache } from "../core/cache";
