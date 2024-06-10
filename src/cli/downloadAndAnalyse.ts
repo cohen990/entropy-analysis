@@ -14,14 +14,15 @@ export const args = parse<DownloadAndAnalyseProjectArgs>({
 
 (async () => {
     const repoDetails = await download(args);
-    const countLocResults = await countProjectLoc(args);
+    const argsWithRef = { ...args, ref: repoDetails.refSha };
+    const countLocResults = await countProjectLoc(argsWithRef);
     if (args.maxLoc && countLocResults.linesOfCode > args.maxLoc) {
         console.log(
             `Project has ${countLocResults.linesOfCode}. Greater than the requested max of ${args.maxLoc}. Skipping`
         );
         return;
     }
-    const entropy = await analyseProject(args);
+    const entropy = await analyseProject(argsWithRef);
     await writeResults({
         ...args,
         sizeInBytes: repoDetails.sizeInBytes,
