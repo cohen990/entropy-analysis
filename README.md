@@ -4,6 +4,8 @@ to run
 
 ```
 npm i
-npm run download -- -o microsoft -r TypeScript -f main
-npm run analyse  -- -o microsoft -r TypeScript -p src/testRunner/unittests/moduleResolution.ts
+export GITHUB_AUTH_TOKEN=<your personal auth token - especially for private repos - ensure permissions are correct>
+npm run download-and-analyse -- -o <repo owner> -r <repo name>
 ```
+
+I believe they need to be case sensitive.
