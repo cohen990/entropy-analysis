@@ -16,10 +16,7 @@ export const analyseProject: (
 
     const analysers = fileTree.getFileAnalysers();
 
-    const batchSize = 50;
-    for (var i = 0; i < batchSize; i += batchSize) {
-        await Promise.all(analysers.slice(i, i + batchSize).map((x) => x()));
-    }
+    await Promise.all(analysers.map((x) => x()));
 
     const treeOmega = fileTree.recomputeTreeOmega();
 
