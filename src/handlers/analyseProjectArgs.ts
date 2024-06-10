@@ -6,8 +6,6 @@ export interface AnalyseProjectArgs {
     exclude: string[];
 }
 
-export interface DownloadAndAnalyseProjectArgs
-    extends AnalyseProjectArgs,
-        DownloadArgs {
+export interface DownloadAndAnalyseProjectArgs extends AnalyseProjectArgs, DownloadArgs {
     maxLoc: number;
 }
