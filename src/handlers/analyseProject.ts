@@ -2,7 +2,7 @@ import { sync } from "glob";
 import { fileHasher, initialiseCache } from "../core/cache";
 import { discoverFiles } from "../core/discoverFiles";
 import { computeEntropy } from "../core/entropy";
-import { correctDirectoryCasing, sanitiseFileName } from "../core/fileSystem";
+import { correctDirectoryGuess, sanitiseFileName } from "../core/fileSystem";
 import { FileProperties, buildFileTree } from "../core/fileTree";
 import { bigintDeserialiser, bigintSerialiser } from "../core/serialiser";
 import { AnalyseWorkerData, AnalyseWorkerResults } from "../workers/analyse";
@@ -15,7 +15,7 @@ export const analyseProject: (
     const projectKey = sanitiseFileName(`${owner}-${repo}`);
     const analysableKey = sanitiseFileName(`${projectKey}-${ref}`);
     const guessedPath = `${process.cwd()}/analysables/${projectKey}/${analysableKey}`;
-    const path = correctDirectoryCasing(guessedPath)
+    const path = correctDirectoryGuess(guessedPath)
     const cache = initialiseCache<bigint>(
         projectKey,
         "omega",
