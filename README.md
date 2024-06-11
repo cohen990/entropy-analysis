@@ -2,9 +2,10 @@ review NOTES.md and HYPOTHESES.md to follow the thinking and experimentation
 
 to run
 
+The github access token is not required for public repos - but the API rate limits are quite... uh... limiting if you are not authenticated
 ```
 npm i
-export GITHUB_AUTH_TOKEN=<your personal auth token - especially for private repos - ensure permissions are correct>
+export GITHUB_ACCESS_TOKEN=<your personal access token - especially for private repos - ensure permissions are correct>
 npm run download-and-analyse -- -o <repo owner> -r <repo name>
 ```
 
